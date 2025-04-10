@@ -4,8 +4,32 @@ import Button from "../components/Button";
 const Home = () => {
   // logic
 
-  const handleStart = () => {
+  const handleStart = async () => {
     console.log("info페이지로 이동");
+    //예외처리
+    // try {
+    //   //api요청
+    //   //response가 오기까지 약간의 시간이 걸리므로 비동기 처리(await, async) 필요
+    //   const response = await fetch("http://localhost:8080/test");
+    //   const result = await response.json();
+    //   console.log("🚀 ~ handleStart ~ result:", result);
+    // } catch (error) {
+    //   //api실패 시
+    //   console.error(error);
+    // }
+
+    // message api
+    try {
+      const response = await fetch("http://localhost:8080/message", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ userMessage: "당근 빼고" }),
+      });
+      const result = response.json();
+      console.log("🚀 ~ handleStart ~ result:", result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // view
