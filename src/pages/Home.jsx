@@ -1,35 +1,38 @@
 import React from "react";
 import Button from "../components/Button";
+import Title from "../components/Title";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   // logic
+  const history = useNavigate();
 
-  const handleStart = async () => {
-    console.log("info페이지로 이동");
-    //예외처리
+  const handleStart = () => {
+    history("/info");
+    // console.log("info페이지로 이동");
+    // //예외처리
+    // // try {
+    // //   //api요청
+    // //   //response가 오기까지 약간의 시간이 걸리므로 비동기 처리(await, async) 필요
+    // //   const response = await fetch("http://localhost:8080/test");
+    // //   const result = await response.json();
+    // //   console.log("🚀 ~ handleStart ~ result:", result);
+    // // } catch (error) {
+    // //   //api실패 시
+    // //   console.error(error);
+    // // }
+    // // message api
     // try {
-    //   //api요청
-    //   //response가 오기까지 약간의 시간이 걸리므로 비동기 처리(await, async) 필요
-    //   const response = await fetch("http://localhost:8080/test");
-    //   const result = await response.json();
+    //   const response = await fetch("http://localhost:8080/message", {
+    //     method: "POST",
+    //     headers: { "Content-type": "application/json" },
+    //     body: JSON.stringify({ userMessage: "당근 빼고" }),
+    //   });
+    //   const result = response.json();
     //   console.log("🚀 ~ handleStart ~ result:", result);
     // } catch (error) {
-    //   //api실패 시
     //   console.error(error);
     // }
-
-    // message api
-    try {
-      const response = await fetch("http://localhost:8080/message", {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ userMessage: "당근 빼고" }),
-      });
-      const result = response.json();
-      console.log("🚀 ~ handleStart ~ result:", result);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   // view
@@ -40,15 +43,12 @@ const Home = () => {
         <img src="./images/hero.svg" alt="hero" />
       </div>
       <div className="h-full flex flex-col">
-        {/* TODO:Title 컴포넌트 */}
-        <div className="px-2 pt-6">
-          <h1 className="text-4.5xl font-black text-white">맛있는 쉐프</h1>
-          <span className="block text-sm mt-3 text-white break-keep pr-9">
-            냉장고에 있는 재료로 뭐 해먹을지 고민되시나요? 남은 재료만 넣으면
-            맛있는 레시피가 나옵니다!
-          </span>
-        </div>
-        {/* // TODO:Title 컴포넌트 */}
+        <Title
+          mainTitle={"맛있는 쉐프"}
+          subTitle={
+            "냉장고에 있는 재료로 뭐 해먹을지 고민되시나요? 남은 재료만 넣으면 맛있는 레시피가 나옵니다!"
+          }
+        />
         {/* START:Button 영역 */}
         <Button
           text="Get started"
