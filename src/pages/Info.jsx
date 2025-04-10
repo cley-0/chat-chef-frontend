@@ -4,12 +4,25 @@ import InfoInput from "../components/InfoInput";
 import AddButton from "../components/AddButton";
 import Button from "../components/Button";
 import Title from "./../components/Title";
+import { useNavigate } from "react-router-dom";
 
-const Info = () => {
+const Info = ({ sendIngredientList }) => {
   // logic
+  const history = useNavigate();
 
-  // TODO: set함수 추가하기
   const [ingredientList, setIngredientList] = useState([]); // 사용자가 입력할 재료 목록
+
+  const handleNext = () => {
+    //재료명을 최소한 1개 이상 입력해야 페이지 이동
+    const filteredList = ingredientList.filter((item) => item.value.trim());
+    if (filteredList.length) {
+      //재료가 1개 이상인 경우
+      sendIngredientList(filteredList); //부모에게 데이터 전송
+      history("/chat");
+      return;
+    }
+    alert("최소 1개 이상의 재료를 입력해주세요.");
+  };
 
   const addIngredient = () => {
     //재료 추가
@@ -20,23 +33,34 @@ const Info = () => {
       text: "재료명",
       value: "",
     };
-
+    //추가
     setIngredientList([...ingredientList, newItem]);
   };
 
-  const handleNext = () => {
-    console.log("chat페이지로 이동");
+  const handleRemove = (selectedId) => {
+    const filteredList = ingredientList.filter(
+      (item) => item.id !== selectedId
+    );
+    //삭제
+    setIngredientList(filteredList);
+  };
+
+  const handleInputChange = (selectedItem) => {
+    //업데이트
+    setIngredientList((prev) =>
+      prev.map((item) => (item.id === selectedItem.id ? selectedItem : item))
+    );
   };
 
   // 1. 컴포넌트가 생성될 때 딱 한번 실행
   useEffect(() => {
-    console.log("한번만 실행!!");
+    // console.log("한번만 실행!!");
   });
 
   // 2. 페이지내에 있는 state들 중 한개라도 값이 변경되면 실행(최초 접속도 변경으로 간주)
   //    : 권장하지 않음.
   useEffect(() => {
-    console.log("state변경");
+    // console.log("state변경");
   });
 
   // 3. 특정 state가 변경될때 실행
@@ -59,7 +83,12 @@ const Info = () => {
             {/* START:input 영역 */}
             <div>
               {ingredientList.map((item) => (
-                <InfoInput key={item.id} content={item} />
+                <InfoInput
+                  key={item.id}
+                  content={item}
+                  onRemove={handleRemove}
+                  onChange={handleInputChange}
+                />
               ))}
             </div>
             {/* END:input 영역 */}
