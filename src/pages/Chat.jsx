@@ -18,11 +18,40 @@ const Chat = ({ ingredientList }) => {
     setValue(value);
   };
 
+  const sendMessage = async (userMessage) => {
+    setIsMessageLoading(true);
+    try {
+      const response = await fetch(`${endpoint}/message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userMessage,
+          messages: [...infoMessages, ...messages],
+        }),
+      });
+      const result = await response.json();
+
+      // chatGPT의 답변 추가
+      const { role, content } = result.data;
+      const assistantMessage = { role, content };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // try 혹은 error 구문 이후 실행되는 곳
+      setIsMessageLoading(false);
+    }
+  };
+
   const hadleSubmit = (event) => {
     event.preventDefault();
-    console.log("메시지 보내기");
     // 유저 메시지 추가
-    setMessages((prev) => [...prev, { role: "user", content: value.trim() }]);
+    const userMessage = { role: "user", content: value.trim() };
+    setMessages((prev) => [...prev, userMessage]);
+
+    // 지금까지의 대화목록으로 api 호출
+    sendMessage(userMessage);
+    setValue("");
   };
 
   //최초 정보 세팅
@@ -36,7 +65,6 @@ const Chat = ({ ingredientList }) => {
         body: JSON.stringify({ ingredientList }),
       });
       const result = await response.json();
-      console.log("🚀 ~ sendInfo ~ result:", result);
 
       //데이터가 잘 들어온 경우에만 다음 코드 실행
       if (!result.data) return;
@@ -60,8 +88,6 @@ const Chat = ({ ingredientList }) => {
 
   //페이지 로드시 딱 한번 실행
   useEffect(() => {
-    console.log("ingredientList", ingredientList);
-    // console.log("endpoint", endpoint);
     sendInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

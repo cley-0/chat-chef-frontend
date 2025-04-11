@@ -65,7 +65,7 @@ const Info = ({ sendIngredientList }) => {
 
   // 3. 특정 state가 변경될때 실행
   useEffect(() => {
-    console.log("🚀 ~ addIngredient ~ ingredientList:", ingredientList);
+    // console.log("🚀 ~ addIngredient ~ ingredientList:", ingredientList);
   }, [ingredientList]);
 
   // view
