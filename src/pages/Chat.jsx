@@ -8,24 +8,61 @@ const Chat = ({ ingredientList }) => {
   const endpoint = process.env.REACT_APP_SERVER_ADDRESS;
   const [value, setValue] = useState("");
 
-  // TODO: set함수 추가하기
-  const [messages] = useState([]); // chatGPT와 사용자의 대화 메시지 배열
-  const [isInfoLoading] = useState(false); // 최초 정보 요청시 로딩
-  const [isMessageLoading] = useState(true); // 사용자와 메시지 주고 받을때 로딩
+  const [messages, setMessages] = useState([]); // chatGPT와 사용자의 대화 메시지 배열
+  const [isInfoLoading, setIsInfoLoading] = useState(true); // 최초 정보 요청시 로딩
+  const [isMessageLoading, setIsMessageLoading] = useState(false); // 사용자와 메시지 주고 받을때 로딩
+  const [infoMessages, setInfoMessages] = useState([]); // 초기 답변 대화 목록
+
   const hadleChange = (event) => {
     const { value } = event.target;
-    console.log("value==>", value);
     setValue(value);
   };
 
   const hadleSubmit = (event) => {
     event.preventDefault();
     console.log("메시지 보내기");
+    // 유저 메시지 추가
+    setMessages((prev) => [...prev, { role: "user", content: value.trim() }]);
   };
 
+  //최초 정보 세팅
+  const sendInfo = async () => {
+    //로딩 스피너 on
+    setIsInfoLoading(true);
+    try {
+      const response = await fetch(`${endpoint}/recipe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredientList }),
+      });
+      const result = await response.json();
+      console.log("🚀 ~ sendInfo ~ result:", result);
+
+      //데이터가 잘 들어온 경우에만 다음 코드 실행
+      if (!result.data) return;
+
+      // arr.length -1 : 배열의 마지막 요소ㅢ index값
+      const removeLastDataList = result.data.filter(
+        (_, index, arr) => arr.length - 1 !== index
+      );
+      setInfoMessages(removeLastDataList); // 초기 기본답변 저장
+
+      // 첫 assistant 답변 UI에 추가
+      const { role, content } = result.data[result.data.length - 1];
+      setMessages((prev) => [...prev, { role, content }]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      //로딩 스피너 off
+      setIsInfoLoading(false);
+    }
+  };
+
+  //페이지 로드시 딱 한번 실행
   useEffect(() => {
     console.log("ingredientList", ingredientList);
-    console.log("endpoint", endpoint);
+    // console.log("endpoint", endpoint);
+    sendInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
