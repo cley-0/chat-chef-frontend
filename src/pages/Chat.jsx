@@ -51,6 +51,8 @@ const Chat = ({ ingredientList }) => {
 
     // 지금까지의 대화목록으로 api 호출
     sendMessage(userMessage);
+
+    // Input 초기화
     setValue("");
   };
 
